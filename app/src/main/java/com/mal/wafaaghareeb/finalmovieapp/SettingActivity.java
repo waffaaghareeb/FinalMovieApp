@@ -1,13 +1,16 @@
 package com.mal.wafaaghareeb.finalmovieapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-public class SettingActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+import java.lang.String;
 
+public class SettingActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+    static String Pref_sorting_key="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +23,13 @@ public class SettingActivity extends PreferenceActivity implements Preference.On
         preference.setOnPreferenceChangeListener(this);
         onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext())
                 .getString(preference.getKey(), ""));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this,MovieListActivity.class);
+        startActivity(i);
     }
 
     @Override

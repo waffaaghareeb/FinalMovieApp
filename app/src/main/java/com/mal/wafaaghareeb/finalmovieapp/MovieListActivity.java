@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.android.volley.Request;
@@ -63,10 +64,35 @@ public class MovieListActivity extends AppCompatActivity {
     ImageAdapter imageAdapter;
     SharedPreferences sharedPreferences;
     String sort_by;
+    static final String STATE_SCROLL_POSITION = "scrollPosition";
+    int savedPosition = 0;
+
 
     public static  boolean mTwoPane;
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
 
+        // Save the user's current game state
+        int currentPosition = gridView.getLastVisiblePosition();
+        savedInstanceState.putInt(STATE_SCROLL_POSITION,
+                currentPosition);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        savedPosition = savedInstanceState
+                .getInt(STATE_SCROLL_POSITION);
+        gridView.setSelection(savedPosition);
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +102,10 @@ public class MovieListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
         gridView=(GridView) findViewById(R.id.movie_grid);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MovieListActivity.this);
+        SettingActivity.Pref_sorting_key = sharedPreferences.getString(getString(R.string.pref_sorting_key),
+                getString(R.string.pref_sorting_default_value));
+        getData();
         if (findViewById(R.id.movie_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -84,10 +114,16 @@ public class MovieListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
     }
-    @Override
-    public void onResume()
-    {
-        super.onResume();
+
+    void checkData(){
+
+        String      new_sort_by = sharedPreferences.getString(getString(R.string.pref_sorting_key),
+                getString(R.string.pref_sorting_default_value));
+        if (!new_sort_by.equals(SettingActivity.Pref_sorting_key)){
+            getData();
+        }
+    }
+    void getData(){
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue( MovieListActivity.this);
         // Request a string response from the provided  URL.
@@ -96,13 +132,11 @@ public class MovieListActivity extends AppCompatActivity {
         String Movie_base_url="http://api.themoviedb.org/3/discover/movie?";
         String SORT_BY = "sort_by";
         String API_PARAM="api_key";
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences( MovieListActivity.this);
-        sort_by = sharedPreferences.getString(getString(R.string.pref_sorting_key),
-                getString(R.string.pref_sorting_default_value));
 
-        if(!sort_by.equals(getString(R.string.favo_sorting_key))){
+
+        if(!SettingActivity.Pref_sorting_key.equals(getString(R.string.favo_sorting_key))){
             Uri builtUri= Uri.parse(Movie_base_url).buildUpon()
-                    .appendQueryParameter(SORT_BY , sort_by)
+                    .appendQueryParameter(SORT_BY , SettingActivity.Pref_sorting_key)
                     .appendQueryParameter(API_PARAM, "060108cec244efa8e6b05b5ac1cb3194").build();
             String url0= null;
             try {
@@ -131,7 +165,7 @@ public class MovieListActivity extends AppCompatActivity {
                     Log.d("mo", movieDataModel.length + "");
                     imageAdapter = new ImageAdapter( MovieListActivity.this, movieDataModel);
                     gridView.setAdapter(imageAdapter);
-
+                    gridView.setSelection(savedPosition);
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -183,7 +217,7 @@ public class MovieListActivity extends AppCompatActivity {
                         if (mTwoPane) {
                             Bundle arguments = new Bundle();
                             arguments.putString("movieDataModel", gson.toJson(movieDataModel[position]));
-                       
+
 
                             MovieDetailFragment fragment = new MovieDetailFragment();
                             fragment.setArguments(arguments);
@@ -201,9 +235,17 @@ public class MovieListActivity extends AppCompatActivity {
                 });
 
             }
-
-            //Toast.makeText( MovieListActivity.this, "waiting fav codee", Toast.LENGTH_SHORT).show();
         }
+    }
+    @Override
+    public void onResume()
+    {
+
+
+        super.onResume();
+        // checkData();
+        //    Toast.makeText(MovieListActivity.this, "waiting fav codee", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
