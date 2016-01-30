@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">FinalMovieApp</string>
+    <string name="title_movie_detail">Movie Detail</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_details">DetailsActivity</string>
+
+    <string name="base_image_url">http://image.tmdb.org/t/p/</string>
+    <string name="pref_sorting_key" translatable="false">sorting</string>
+    <string name="pref_sorting_label">Sort-order</string>
+    <string name="pref_sorting_label_popular">Most popular first</string>
+    <string name="pref_sorting_label_rating">Highest-rated first</string>
+    <string name="pref_sorting_value_popular" translatable="false">popularity.desc</string>
+    <string name="pref_sorting_value_rating" translatable="false">vote_average.desc</string>
+    <string name="pref_sorting_default_value" translatable="false">popularity.desc</string>
+    <string name="title_activity_trailers">TrailersActivity</string>
+    <string name="base_url">http://api.themoviedb.org/3/discover/movie?sort_by=</string>
+    <string name="api_key">060108cec244efa8e6b05b5ac1cb3194</string>
+
+    <string name="favourite">Favourites</string>
+    <string name="favo_sorting_key">translatable="false">favo_sorting</string>
+    <string name="title_activity_setting">SettingActivity</string>
+
+</resources>
